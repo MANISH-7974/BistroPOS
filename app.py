@@ -202,11 +202,12 @@ def process_order():
 
 @app.route('/download_invoice/<invoice_no>')
 def download_invoice(invoice_no):
-    file_path = f"invoices/Invoice_{invoice_no}.pdf"
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(base_dir, 'invoices', f"Invoice_{invoice_no}.pdf")
     try:
         return send_file(file_path, as_attachment=True)
     except Exception as e:
-        return "File not found.", 404
+        return f"File not found. System Error: {e}", 404
 
 if __name__ == '__main__':
     app.run(debug=True)
