@@ -1,0 +1,12 @@
+Invoice,Date,Time,Token,Type,Table,Customer,Items,Total (Rs)
+20260912181154,2026-09-12,18:11:54,1,Dine-In,4,Manish ,"1x Chicken Burger, 1x French Fries, 1x Cold Coffee",336.0
+20260913204521,2026-09-13,20:45:21,1,Dine-In,4,Manish ,"1x Chicken Burger, 1x French Fries, 1x Peri Peri Fries",284.29
+20260913205118,2026-09-13,20:51:18,2,Dine-In,,Guest,1x Oreo Shake,157.5
+20260913214251,2026-09-13,21:42:51,3,Dine-In,5,Manish ,"1x Chicken Burger, 2x French Fries, 2x Veg Burger, 2x Cold Coffee, 3x Oreo Shake, 2x Peri Peri Fries",1365.0
+20260913214859,2026-09-13,21:48:59,4,Dine-In,,Guest,1x French Fries,63.0
+20260913215224,2026-09-13,21:52:24,5,Dine-In,,Guest,1x French Fries,63.0
+20260913215620,2026-09-13,21:56:20,6,Dine-In,,Guest,1x Chicken Burger,147.0
+20260913215906,2026-09-13,21:59:06,7,Dine-In,,Guest,"1x Oreo Shake, 1x Cold Coffee, 1x French Fries",346.5
+20260913220016,2026-09-13,22:00:16,8,Dine-In,,Guest,"2x Chicken Burger, 1x Veg Burger, 2x French Fries, 3x Peri Peri Fries, 2x Cold Coffee, 2x Oreo Shake",1349.25
+20260913220101,2026-09-13,22:01:01,9,Dine-In,,Guest,13x French Fries,819.0
+20260913221105,2026-09-13,22:11:05,10,Dine-In,,Guest,5x Peri Peri Fries,446.25

@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BistroPOS - Cashier Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Step 1: Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* BRAND COLORS */
+        :root {
+            --brand-red: #DA291C;
+            --brand-yellow: #FFC72C;
+            --brand-dark: #27251F;
+            --bg-light: #F4F6F9;
+        }
+        
+        body { 
+            background-color: var(--bg-light); 
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Added a subtle background pattern to make the glass effect pop */
+            background-image: radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* Step 3: Glassmorphism Utilities */
+        .pos-navbar { 
+            background: linear-gradient(135deg, rgba(218, 41, 28, 0.95) 0%, rgba(168, 28, 18, 0.95) 100%) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            color: white; 
+            padding: 12px 25px; 
+            box-shadow: 0 10px 30px -10px rgba(218, 41, 28, 0.5); 
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Keep the glass panel for the Cart */
+        .glass-panel {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        /* Navbar Inner Elements (Avatar, Clock, Pro Box) */
+        .brand-icon-box {
+            width: 42px;
+            height: 42px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .avatar-circle {
+            width: 38px;
+            height: 38px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-lock {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 8px 20px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-lock:hover {
+            background: white;
+            color: var(--brand-red);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* CART PANEL */
+        .cart-panel {
+            border-radius: 24px;
+            height: calc(100vh - 90px);
+            padding: 24px;
+            box-shadow: -5px 15px 30px rgba(0,0,0,0.05);
+        }
+        
+        /* Step 2: Advanced Card Hover Physics (TerraScribe translation) */
+        .menu-item { 
+            cursor: pointer; 
+            border: 2px solid transparent; 
+            border-radius: 20px; 
+            background: white;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden; /* Contains the zoomed image */
+        }
+        .menu-item:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 20px 35px -10px rgba(218, 41, 28, 0.16); 
+            border: 2px solid var(--brand-yellow); 
+        }
+        
+        .food-img {
+            height: 140px;
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .menu-item:hover .food-img {
+            transform: scale(1.05); /* Smooth image zoom */
+        }
+
+        .card-body-custom { padding: 15px; }
+        .card-title { font-weight: 700; color: var(--brand-dark); }
+        .item-price { color: var(--brand-red); font-weight: 800; font-size: 1.2rem; }
+
+        /* BUTTONS */
+        .btn-checkout {
+            background-color: var(--brand-yellow);
+            color: var(--brand-dark);
+            font-weight: 800;
+            border: none;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .btn-checkout:hover {
+            background-color: #eeb515;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 199, 44, 0.3);
+        }
+
+        .btn-add-cart {
+            border: 2px solid var(--brand-red);
+            color: var(--brand-red);
+            background-color: transparent;
+            font-weight: 700;
+            border-radius: 20px; 
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            width: 80%;
+            margin-top: 10px;
+        }
+        .btn-add-cart:hover, .menu-item:hover .btn-add-cart {
+            background-color: var(--brand-red);
+            color: white;
+            box-shadow: 0 4px 10px rgba(218, 41, 28, 0.3);
+        }
+
+        /* Step 4: Refined Bottom-Right Toast */
+        #cart-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--brand-dark); 
+            color: white;
+            padding: 14px 24px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            
+            /* The TerraScribe transition logic */
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+        .toast-visible {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        /* Menu Filter Fade Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    </style>
+</head>
+<body>
+
+<!-- UPGRADED TOP NAVIGATION BAR -->
+<div class="pos-navbar d-flex justify-content-between align-items-center">
+    
+    <!-- Left Side: Brand Logo -->
+    <div class="d-flex align-items-center gap-3">
+        <div class="brand-icon-box">
+            <i data-lucide="store" class="text-white"></i>
+        </div>
+        <h4 class="mb-0 fw-bold tracking-tight text-white" style="letter-spacing: 0.5px;">
+            BistroPOS <span class="badge bg-white text-danger ms-2 rounded-pill shadow-sm px-2 py-1" style="font-size: 0.65rem; vertical-align: middle;">PRO</span>
+        </h4>
+    </div>
+    
+    <!-- Middle: Live Digital Clock -->
+    <div class="d-none d-md-flex align-items-center gap-2 px-4 py-2 rounded-pill" style="background: rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.1);">
+        <i data-lucide="clock" class="w-4 h-4 text-white-50"></i>
+        <span id="live-clock" class="fw-semibold text-white" style="font-size: 0.95rem; letter-spacing: 1px;">--:-- --</span>
+    </div>
+
+    <!-- Right Side: User Avatar & Lock Button -->
+    <div class="d-flex align-items-center gap-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex flex-column text-end" style="line-height: 1.2;">
+                <span style="font-size: 0.7rem; color: rgba(255,255,255,0.7); text-transform: uppercase; font-weight: 700;">Cashier</span>
+                <strong class="text-white" style="font-size: 0.95rem;">Admin</strong>
+            </div>
+            <div class="avatar-circle">
+                <i data-lucide="user" class="w-5 h-5" style="color: var(--brand-red);"></i>
+            </div>
+        </div>
+        <div style="height: 30px; width: 1px; background: rgba(255,255,255,0.2);"></div> <!-- Divider Line -->
+        <button class="btn btn-lock d-flex align-items-center gap-2 rounded-pill">
+            <i data-lucide="lock" class="w-4 h-4"></i> Lock
+        </button>
+    </div>
+</div>
+
+<div class="container-fluid mt-2">
+    <div class="row">
+        
+        <!-- LEFT SIDE: The Food Menu -->
+        <div class="col-7 p-4" style="height: calc(100vh - 75px); overflow-y: auto;">
+            
+            <ul class="nav nav-pills mb-4 gap-2" id="menuTabs">
+                <li class="nav-item"><a class="nav-link active category-tab px-4 rounded-pill shadow-sm" style="background-color: var(--brand-red);" href="#" onclick="filterMenu('all', this)">All Items</a></li>
+                <li class="nav-item"><a class="nav-link text-dark fw-bold category-tab px-4 rounded-pill" href="#" onclick="filterMenu('burger', this)">Burgers</a></li>
+                <li class="nav-item"><a class="nav-link text-dark fw-bold category-tab px-4 rounded-pill" href="#" onclick="filterMenu('side', this)">Sides</a></li>
+                <li class="nav-item"><a class="nav-link text-dark fw-bold category-tab px-4 rounded-pill" href="#" onclick="filterMenu('beverage', this)">Beverages</a></li>
+            </ul>
+            
+            <div class="row g-4" id="food-grid">
+                <!-- Veg Burger -->
+                <div class="col-4 food-item-wrapper" data-category="burger">
+                    <div class="card menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=400" class="food-img" alt="Veg Burger">
+                        <div class="card-body-custom">
+                            <h6 class="card-title">Veg Burger</h6>
+                            <p class="item-price mb-0">Rs 90</p>
+                            <button class="btn btn-add-cart d-inline-flex justify-content-center align-items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chicken Burger -->
+                <div class="col-4 food-item-wrapper" data-category="burger">
+                    <div class="card menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1606131731446-5568d87113aa?w=400" class="food-img" alt="Chicken Burger">
+                        <div class="card-body-custom">
+                            <h6 class="card-title">Chicken Burger</h6>
+                            <p class="item-price mb-0">Rs 140</p>
+                            <button class="btn btn-add-cart d-inline-flex justify-content-center align-items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- French Fries -->
+                <div class="col-4 food-item-wrapper" data-category="side">
+                    <div class="card menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1576107232684-1279f390859f?w=400" class="food-img" alt="French Fries">
+                        <div class="card-body-custom">
+                            <h6 class="card-title">French Fries</h6>
+                            <p class="item-price mb-0">Rs 60</p>
+                            <button class="btn btn-add-cart d-inline-flex justify-content-center align-items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Peri Peri Fries -->
+                <div class="col-4 food-item-wrapper" data-category="side">
+                    <div class="card menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=400" class="food-img" alt="Peri Peri Fries">
+                        <div class="card-body-custom">
+                            <h6 class="card-title">Peri Peri Fries</h6>
+                            <p class="item-price mb-0">Rs 85</p>
+                            <button class="btn btn-add-cart d-inline-flex justify-content-center align-items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cold Coffee -->
+                <div class="col-4 food-item-wrapper" data-category="beverage">
+                    <div class="card menu-item text-center">
+                        <img src="https://media.istockphoto.com/id/155370125/photo/iced-coffee.jpg?s=612x612&w=0&k=20&c=H3THiHl4pvB8tJ6C3eGI2YFjQKZqZLZwAgQW_vRjAk0=" class="food-img" alt="Cold Coffee">
+                        <div class="card-body-custom">
+                            <h6 class="card-title">Cold Coffee</h6>
+                            <p class="item-price mb-0">Rs 120</p>
+                            <button class="btn btn-add-cart d-inline-flex justify-content-center align-items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Oreo Shake -->
+                <div class="col-4 food-item-wrapper" data-category="beverage">
+                    <div class="card menu-item text-center">
+                        <img src="https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="food-img" class="food-img" alt="Oreo Shake">
+                        <div class="card-body-custom">
+                            <h6 class="card-title">Oreo Shake</h6>
+                            <p class="item-price mb-0">Rs 150</p>
+                            <button class="btn btn-add-cart d-inline-flex justify-content-center align-items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE: The Cart (Glassmorphic) -->
+        <div class="col-5 p-3">
+            <div class="cart-panel glass-panel d-flex flex-column">
+                
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <select id="order-type" class="form-select text-muted rounded-pill">
+                                <option>Dine-In</option>
+                                <option>Take-away</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" id="table-no" class="form-control rounded-pill px-3" placeholder="Table No.">
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <input type="text" id="customer-name" class="form-control rounded-pill px-3" placeholder="Customer Name">
+                        </div>
+                        <div class="col-6">
+                            <input type="text" id="phone-number" class="form-control rounded-pill px-3" placeholder="Phone Number">
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mb-3 fw-bold d-flex align-items-center gap-2" style="color: var(--brand-dark);">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 text-danger"></i> Current Order
+                </h5>
+                
+                <!-- Scrollable Cart Area -->
+                <div class="flex-grow-1 overflow-auto mb-3 pe-2">
+                    <ul class="list-group list-group-flush" id="cart-items" style="background: transparent;">
+                        <li class="list-group-item text-center text-muted mt-4 border-0" style="background: transparent;">
+                            <i data-lucide="shopping-cart" class="w-8 h-8 mx-auto mb-2 opacity-50"></i><br>
+                            Cart is empty. Click items to add.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- MATH SECTION -->
+                <div class="border-top pt-3 border-secondary-subtle">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted fw-bold">Subtotal</span>
+                        <strong id="display-subtotal">Rs 0.00</strong>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted fw-bold">Discount (%)</span>
+                        <input type="number" id="discount-input" class="form-control form-control-sm text-end rounded-pill px-3" style="width: 80px;" placeholder="0" oninput="updateCartUI()">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted fw-bold">GST Slab</span>
+                        <select id="tax-input" class="form-select form-select-sm rounded-pill px-3" style="width: 80px;" onchange="updateCartUI()">
+                            <option value="0">0%</option>
+                            <option value="5" selected>5%</option>
+                            <option value="12">12%</option>
+                            <option value="18">18%</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-3 mt-2 pt-2 border-top border-secondary-subtle">
+                        <span class="fs-4 fw-bold">Total</span>
+                        <!-- The Animated Total Span -->
+                        <span class="fs-3 fw-bold text-success" id="display-total">Rs 0.00</span>
+                    </div>
+                    
+                    <button class="btn btn-checkout w-100 btn-lg p-3 d-flex justify-content-center align-items-center gap-2" onclick="checkout()">
+                        CHECKOUT <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                    <button class="btn btn-link text-danger w-100 mt-2 text-decoration-none fw-bold" onclick="clearCart()">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Clear Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- THE FLOATING TOAST -->
+<div id="cart-toast">
+    <i data-lucide="check-circle" class="w-5 h-5" style="color: #4ade80;"></i>
+    <span id="toast-msg">Item added!</span>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4 glass-panel" style="border-radius: 24px; border: none;">
+            <div class="modal-body">
+                <i data-lucide="check-circle" class="w-16 h-16 mx-auto mb-3" style="color: #10b981;"></i>
+                <h3 class="mt-2 fw-bold" style="color: var(--brand-dark);">Order Successful!</h3>
+                <p class="text-muted mt-3" id="success-modal-msg">Receipt has been generated.</p>
+                <button type="button" class="btn btn-checkout w-75 mt-3 p-3 rounded-pill" data-bs-dismiss="modal">Start New Order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Initialize icons on first load
+    lucide.createIcons();
+
+    let cart = [];
+    let currentGrandTotal = 0; // Tracks the total for animation
+
+    // Filter Logic
+    function filterMenu(category, clickedTab) {
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.classList.remove('active', 'shadow-sm');
+            tab.style.backgroundColor = 'transparent';
+            tab.classList.add('text-dark', 'fw-bold');
+        });
+        
+        clickedTab.classList.add('active', 'shadow-sm');
+        clickedTab.classList.remove('text-dark', 'fw-bold');
+        clickedTab.style.backgroundColor = 'var(--brand-red)';
+
+        document.querySelectorAll('.food-item-wrapper').forEach(item => {
+            item.classList.remove('fade-in'); 
+            let itemCategory = item.getAttribute('data-category');
+            
+            if (category === 'all' || itemCategory === category) {
+                item.style.display = 'block'; 
+                setTimeout(() => item.classList.add('fade-in'), 10);
+            } else {
+                item.style.display = 'none'; 
+            }
+        });
+    }
+
+    // Add to Cart Interaction
+    document.querySelectorAll('.menu-item').forEach(card => {
+        card.addEventListener('click', function() {
+            let itemName = this.querySelector('.card-title').innerText;
+            let itemPrice = parseFloat(this.querySelector('.item-price').innerText.replace('Rs ', ''));
+            
+            let existingItem = cart.find(item => item.name === itemName);
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ name: itemName, price: itemPrice, qty: 1 });
+            }
+            updateCartUI();
+            
+            // Show the elegant floating toast
+            showToast(`${itemName} added to cart!`);
+        });
+    });
+
+    // Step 4: The Show Toast Logic (from script.js)
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('cart-toast');
+        
+        // Dynamically swap the icon and color based on the situation
+        if (isError) {
+            toast.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5" style="color: #ef4444;"></i> <span>${msg}</span>`;
+        } else {
+            toast.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5" style="color: #4ade80;"></i> <span>${msg}</span>`;
+        }
+        
+        lucide.createIcons(); // Render the new vector icon
+        
+        toast.classList.add('toast-visible');
+        
+        setTimeout(() => {
+            toast.classList.remove('toast-visible');
+        }, 2500);
+    }
+
+    // Remove Item
+    function removeItem(itemName) {
+        cart = cart.filter(item => item.name !== itemName);
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        let cartList = document.getElementById('cart-items');
+        cartList.innerHTML = ''; 
+        let subtotal = 0;
+
+        if (cart.length === 0) {
+            cartList.innerHTML = `
+                <li class="list-group-item text-center text-muted mt-4 border-0" style="background: transparent;">
+                    <i data-lucide="shopping-cart" class="w-8 h-8 mx-auto mb-2 opacity-50"></i><br>
+                    Cart is empty. Click items to add.
+                </li>`;
+        } else {
+            cart.forEach(item => {
+                let itemTotal = item.price * item.qty;
+                subtotal += itemTotal; 
+                
+                cartList.innerHTML += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 border-bottom border-secondary-subtle" style="background: transparent;">
+                        <div>
+                            <h6 class="my-0 fw-bold" style="color: var(--brand-dark);">${item.name}</h6>
+                            <small class="text-muted">Qty: ${item.qty} x Rs ${item.price}</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold me-3 text-dark">Rs ${itemTotal.toFixed(2)}</span>
+                            <button class="btn btn-sm btn-outline-danger px-2 py-1 border-0" onclick="removeItem('${item.name}')">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </li>
+                `;
+            });
+        }
+
+        // Re-initialize Lucide icons for the newly injected HTML buttons
+        lucide.createIcons();
+
+        let discountPercent = parseFloat(document.getElementById('discount-input').value) || 0;
+        let discountedSubtotal = subtotal - (subtotal * (discountPercent / 100));
+        let taxRate = parseFloat(document.getElementById('tax-input').value);
+        let newGrandTotal = discountedSubtotal + (discountedSubtotal * (taxRate / 100));
+
+        document.getElementById('display-subtotal').innerText = `Rs ${subtotal.toFixed(2)}`;
+        
+        // Step 5: Animate the Grand Total!
+        animateValue(document.getElementById('display-total'), currentGrandTotal, newGrandTotal, 400);
+        currentGrandTotal = newGrandTotal; // Update state
+    }
+
+    // Step 5: The Math Counter Animation Engine
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            // Calculate current increment and format to 2 decimals
+            let currentVal = (progress * (end - start) + start);
+            obj.innerHTML = `Rs ${currentVal.toFixed(2)}`;
+            
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function clearCart() {
+        cart = []; 
+        document.getElementById('discount-input').value = ''; 
+        document.getElementById('tax-input').value = '5';
+        updateCartUI(); 
+    }
+
+    function checkout() {
+        if (cart.length === 0) {
+            showToast("Cart is empty! Add items before checking out.", true);
+            return;
+        }
+
+        let orderData = {
+            order_type: document.getElementById('order-type').value,
+            table_no: document.getElementById('table-no').value,
+            customer_name: document.getElementById('customer-name').value || "Guest",
+            phone_number: document.getElementById('phone-number').value,
+            discount: document.getElementById('discount-input').value || 0,
+            tax_rate: document.getElementById('tax-input').value,
+            grand_total: currentGrandTotal.toFixed(2),
+            cart: cart 
+        };
+
+        fetch('/process_order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        })
+        .then(response => response.json()) 
+        .then(data => {
+            if(data.status === "success") {
+                document.getElementById('success-modal-msg').innerHTML = `<span class="fs-4 text-dark fw-bold">Token No: ${data.token}</span><br>Invoice: ${data.invoice_no}`;
+                let successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+                
+                window.location.href = `/download_invoice/${data.invoice_no}`;
+                clearCart();
+                document.getElementById('table-no').value = '';
+                document.getElementById('customer-name').value = '';
+                document.getElementById('phone-number').value = '';
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Server communication error.");
+        });
+    }
+
+    // --- Live Navbar Clock Engine ---
+    function updateClock() {
+        const now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Convert 0 to 12
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        
+        document.getElementById('live-clock').innerText = `${hours}:${minutes} ${ampm}`;
+    }
+    setInterval(updateClock, 1000); // Update every second
+    updateClock(); // Run immediately on load
+
+</script>
+</body>
+</html>
