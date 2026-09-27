@@ -6,14 +6,19 @@ from fpdf import FPDF
 
 app = Flask(__name__)
 
+# All files are saved next to this script, no matter where the app is launched from
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+INVOICES_DIR = os.path.join(BASE_DIR, 'invoices')
+CSV_FILE = os.path.join(BASE_DIR, 'daily_sales.csv')
+
 # Ensure invoices folder exists
-if not os.path.exists('invoices'):
-    os.makedirs('invoices')
+if not os.path.exists(INVOICES_DIR):
+    os.makedirs(INVOICES_DIR)
 
 # --- NEW: Helper Function to Calculate Daily Token ---
 def get_next_token(today_date):
     token = 1
-    filename = "daily_sales.csv"
+    filename = CSV_FILE
     if os.path.isfile(filename):
         with open(filename, mode='r') as file:
             reader = csv.reader(file)
@@ -32,7 +37,6 @@ def process_order():
     order_data = request.get_json()
     
     # 1. Extract frontend data
-    order_type = order_data.get('order_type', 'Dine-In')
     table_no = order_data.get('table_no', 'N/A')
     customer = order_data.get('customer_name', 'Guest')
     phone = order_data.get('phone_number', '')
@@ -60,7 +64,7 @@ def process_order():
     
     # 3. CSV LOGGING (Added Token Column)
     items_summary = ", ".join([f"{item['qty']}x {item['name']}" for item in cart_items])
-    filename = "daily_sales.csv"
+    filename = CSV_FILE
     file_exists = os.path.isfile(filename)
     
     try:
@@ -68,9 +72,9 @@ def process_order():
             writer = csv.writer(file)
             if not file_exists:
                 # Added "Token" to the headers
-                writer.writerow(["Invoice", "Date", "Time", "Token", "Type", "Table", "Customer", "Items", "Total (Rs)"])
+                writer.writerow(["Invoice", "Date", "Time", "Token", "Table", "Customer", "Items", "Total (Rs)"])
             # Save the daily_token to the row
-            writer.writerow([invoice_no, current_date, current_time, daily_token, order_type, table_no, customer, items_summary, round(grand_total, 2)])
+            writer.writerow([invoice_no, current_date, current_time, daily_token, table_no, customer, items_summary, round(grand_total, 2)])
     except Exception as e:
         print(f"CSV Error: {e}")
 
@@ -110,7 +114,7 @@ def process_order():
         pdf.cell(65, 5, f"Invoice No: {invoice_no}", ln=False)
         pdf.cell(65, 5, f"Date: {current_date}", ln=True, align='R')
         pdf.cell(65, 5, f"Customer: {customer}", ln=False)
-        pdf.cell(65, 5, f"Table: {table_no} ({order_type})", ln=True, align='R')
+        pdf.cell(65, 5, f"Table: {table_no}", ln=True, align='R')
         pdf.ln(3)
         
         # --- UPGRADE 1: TRUE INVOICE TABLE ---
@@ -181,12 +185,8 @@ def process_order():
         pdf.set_font("Arial", 'B', 7)
         pdf.cell(130, 5, "[ SCAN QR CODE AT DESK FOR UPI PAYMENT ]", ln=True, align='C')
         
-        pdf_filename = f"invoices/Invoice_{invoice_no}.pdf"
+        pdf_filename = os.path.join(INVOICES_DIR, f"Invoice_{invoice_no}.pdf")
         pdf.output(pdf_filename)
-        
-    except Exception as e:
-        print(f"PDF Error: {e}")
-        return jsonify({"status": "error", "message": "Failed to generate PDF."}), 500
         
     except Exception as e:
         print(f"PDF Error: {e}")
@@ -202,8 +202,7 @@ def process_order():
 
 @app.route('/download_invoice/<invoice_no>')
 def download_invoice(invoice_no):
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(base_dir, 'invoices', f"Invoice_{invoice_no}.pdf")
+    file_path = os.path.join(INVOICES_DIR, f"Invoice_{invoice_no}.pdf")
     try:
         return send_file(file_path, as_attachment=True)
     except Exception as e:
