@@ -198,7 +198,7 @@
 </head>
 <body>
 
-<!-- UPGRADED TOP NAVIGATION BAR -->
+<!-- TOP NAVIGATION BAR -->
 <div class="pos-navbar d-flex justify-content-between align-items-center">
     
     <!-- Left Side: Brand Logo -->
@@ -217,7 +217,7 @@
         <span id="live-clock" class="fw-semibold text-white" style="font-size: 0.95rem; letter-spacing: 1px;">--:-- --</span>
     </div>
 
-    <!-- Right Side: User Avatar & Lock Button -->
+    <!-- Right Side: User Avatar -->
     <div class="d-flex align-items-center gap-4">
         <div class="d-flex align-items-center gap-3">
             <div class="d-flex flex-column text-end" style="line-height: 1.2;">
@@ -228,10 +228,6 @@
                 <i data-lucide="user" class="w-5 h-5" style="color: var(--brand-red);"></i>
             </div>
         </div>
-        <div style="height: 30px; width: 1px; background: rgba(255,255,255,0.2);"></div> <!-- Divider Line -->
-        <button class="btn btn-lock d-flex align-items-center gap-2 rounded-pill">
-            <i data-lucide="lock" class="w-4 h-4"></i> Lock
-        </button>
     </div>
 </div>
 
@@ -335,19 +331,13 @@
             </div>
         </div>
 
-        <!-- RIGHT SIDE: The Cart (Glassmorphic) -->
+        <!-- RIGHT SIDE: The Cart -->
         <div class="col-5 p-3">
             <div class="cart-panel glass-panel d-flex flex-column">
                 
                 <div class="mb-3 pb-3 border-bottom">
                     <div class="row g-2 mb-2">
-                        <div class="col-6">
-                            <select id="order-type" class="form-select text-muted rounded-pill">
-                                <option>Dine-In</option>
-                                <option>Take-away</option>
-                            </select>
-                        </div>
-                        <div class="col-6">
+                        <div class="col-12">
                             <input type="text" id="table-no" class="form-control rounded-pill px-3" placeholder="Table No.">
                         </div>
                     </div>
@@ -407,7 +397,7 @@
                         CHECKOUT <i data-lucide="arrow-right" class="w-5 h-5"></i>
                     </button>
                     <button class="btn btn-link text-danger w-100 mt-2 text-decoration-none fw-bold" onclick="clearCart()">
-                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Clear Cart
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i> Clear Cart
                     </button>
                 </div>
             </div>
@@ -441,7 +431,7 @@
     lucide.createIcons();
 
     let cart = [];
-    let currentGrandTotal = 0; // Tracks the total for animation
+    let currentGrandTotal = 0; 
 
     // Filter Logic
     function filterMenu(category, clickedTab) {
@@ -592,7 +582,6 @@
         }
 
         let orderData = {
-            order_type: document.getElementById('order-type').value,
             table_no: document.getElementById('table-no').value,
             customer_name: document.getElementById('customer-name').value || "Guest",
             phone_number: document.getElementById('phone-number').value,
