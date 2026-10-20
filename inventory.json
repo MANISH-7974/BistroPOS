@@ -1,0 +1,98 @@
+{
+  "Paneer Tikka": {
+    "stock": 12,
+    "threshold": 5
+  },
+  "Veg Biryani": {
+    "stock": 10,
+    "threshold": 5
+  },
+  "Dal Makhani": {
+    "stock": 19,
+    "threshold": 5
+  },
+  "Butter Chicken": {
+    "stock": 20,
+    "threshold": 5
+  },
+  "Garlic Naan": {
+    "stock": 29,
+    "threshold": 8
+  },
+  "Chole Bhature": {
+    "stock": 19,
+    "threshold": 5
+  },
+  "Veg Burger": {
+    "stock": 20,
+    "threshold": 5
+  },
+  "Chicken Burger": {
+    "stock": 19,
+    "threshold": 5
+  },
+  "Cheese Burger": {
+    "stock": 20,
+    "threshold": 5
+  },
+  "Spicy Paneer": {
+    "stock": 20,
+    "threshold": 5
+  },
+  "Double Patty": {
+    "stock": 19,
+    "threshold": 5
+  },
+  "Mushroom Swiss": {
+    "stock": 20,
+    "threshold": 5
+  },
+  "French Fries": {
+    "stock": 30,
+    "threshold": 8
+  },
+  "Peri Peri Fries": {
+    "stock": 24,
+    "threshold": 6
+  },
+  "Garlic Bread": {
+    "stock": 25,
+    "threshold": 6
+  },
+  "Onion Rings": {
+    "stock": 25,
+    "threshold": 6
+  },
+  "Chicken Nuggets": {
+    "stock": 25,
+    "threshold": 6
+  },
+  "Loaded Nachos": {
+    "stock": 20,
+    "threshold": 5
+  },
+  "Cold Coffee": {
+    "stock": 28,
+    "threshold": 8
+  },
+  "Oreo Shake": {
+    "stock": 24,
+    "threshold": 6
+  },
+  "Masala Chai": {
+    "stock": 40,
+    "threshold": 10
+  },
+  "Fresh Lime Soda": {
+    "stock": 30,
+    "threshold": 8
+  },
+  "Mango Lassi": {
+    "stock": 24,
+    "threshold": 6
+  },
+  "Virgin Mojito": {
+    "stock": 24,
+    "threshold": 6
+  }
+}
